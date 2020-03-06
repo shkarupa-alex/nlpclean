@@ -103,6 +103,13 @@ def fragment_to_text(html):
 
 
 class NewspaperCleaner(BaseNewspaperCleaner):
+    def clean(self, doc_to_clean):
+        doc_to_clean = super(NewspaperCleaner, self).clean(doc_to_clean)
+
+        doc_to_clean = self.div_to_para(doc_to_clean, 'article')
+
+        return doc_to_clean
+
     def div_to_para(self, doc, dom_type):
         if 'span' == dom_type:
             return doc
