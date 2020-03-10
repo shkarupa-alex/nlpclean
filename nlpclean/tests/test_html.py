@@ -140,12 +140,33 @@ class TestHtmlToText(unittest.TestCase):
 
         self.assertEqual(ground, source)
 
-    def test_livejournal(self):
-        with open(os.path.join(os.path.dirname(__file__), 'html_to_text', 'livejournal.html'), 'rt') as f:
+    def test_livejournal1(self):
+        with open(os.path.join(os.path.dirname(__file__), 'html_to_text', 'livejournal1.html'), 'rt') as f:
             source = f.read()
             source = fragment_to_text(html_to_article(source, 'ru'))
-        with open(os.path.join(os.path.dirname(__file__), 'html_to_text', 'livejournal.txt'), 'rt') as f:
+        with open(os.path.join(os.path.dirname(__file__), 'html_to_text', 'livejournal1.txt'), 'rt') as f:
             ground = f.read()
+
+        self.assertEqual(ground, source)
+
+    def test_livejournal2(self):
+        with open(os.path.join(os.path.dirname(__file__), 'html_to_text', 'livejournal2.html'), 'rt') as f:
+            source = f.read()
+            source = fragment_to_text(html_to_article(source, 'ru'))
+        with open(os.path.join(os.path.dirname(__file__), 'html_to_text', 'livejournal2.txt'), 'rt') as f:
+            ground = f.read()
+
+        self.assertEqual(ground, source)
+
+    def test_livejournal3(self):
+        with open(os.path.join(os.path.dirname(__file__), 'html_to_text', 'livejournal3.html'), 'rt') as f:
+            source = f.read()
+            source = fragment_to_text(html_to_article(source, 'ru'))
+        with open(os.path.join(os.path.dirname(__file__), 'html_to_text', 'livejournal3.txt'), 'rt') as f:
+            ground = f.read()
+
+        # with open(os.path.join(os.path.dirname(__file__), 'html_to_text', '_debug_0.txt'), 'wt') as f:
+        #     f.write(source)
 
         self.assertEqual(ground, source)
 
