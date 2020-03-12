@@ -2,6 +2,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import gc
 import os
 import resource
 import unittest
@@ -19,6 +20,19 @@ class TestHtmlToArticle(unittest.TestCase):
 
         self.assertEqual(with_space, without_space)
         self.assertEqual(without_space, comment_ground)
+
+    # def test_memory(self):
+    #     with open(os.path.join(os.path.dirname(__file__), 'html_to_article', 'page_source.html'), 'rt') as f:
+    #         source = f.read()
+    #
+    #     result = html_to_article(source, 'ru')
+    #     memory_start = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+    #     for _ in range(100):
+    #         result = html_to_article(source, 'ru')
+    #     memory_end = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+    #
+    #     self.assertGreater(len(result), 0)
+    #     self.assertGreater(memory_start * 1.01, memory_end)
 
 
 class TestFragmentToText(unittest.TestCase):
@@ -76,6 +90,7 @@ class TestFragmentToText(unittest.TestCase):
 
         self.assertEqual(ground, source)
 
+
     def test_memory(self):
         with open(os.path.join(os.path.dirname(__file__), 'fragment_to_text', 'article1_space.html'), 'rt') as f:
             source = f.read()
@@ -84,10 +99,11 @@ class TestFragmentToText(unittest.TestCase):
         memory_start = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
         for _ in range(100):
             result = fragment_to_text(source)
+        gc.collect()
         memory_end = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
 
         self.assertGreater(len(result), 0)
-        self.assertGreater(memory_start * 1.01, memory_end)
+        self.assertGreater(memory_start * 1.05, memory_end)
 
 
 class TestHtmlToText(unittest.TestCase):

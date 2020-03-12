@@ -2,7 +2,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import gc
 import re
 from bs4 import BeautifulSoup, Comment
 from html import unescape
@@ -48,7 +47,11 @@ def html_to_article(content, language):
     extractor = NewspaperExtractor(config)
     top = extractor.calculate_best_node(doc)
     if top is None:
+        del doc, cleaner, extractor
+        etree.clear_error_log()
+
         return ''
+
     top = extractor.post_cleanup(top)
 
     # Cleanup dummy nodes used for estimation
@@ -59,8 +62,12 @@ def html_to_article(content, language):
     formatter = NewspaperFormatter(config)
     formatter.top_node = top
     formatter.remove_negativescores_nodes()
-    content = formatter.convert_to_html().strip()
+    content = formatter.convert_to_html()
+    content = str(content).strip()
     content = unescape(content)
+
+    del doc, top, cleaner, extractor, formatter
+    etree.clear_error_log()
 
     return content
 
@@ -72,7 +79,7 @@ def fragment_to_text(html):
     soup = BeautifulSoup(html, 'lxml')
 
     # Drop comments
-    for comment in soup.findAll(text=lambda text: isinstance(text, Comment)):
+    for comment in soup(text=lambda text: isinstance(text, Comment)):
         comment.extract()
 
     # Drop non-meaning tags
@@ -87,24 +94,23 @@ def fragment_to_text(html):
         node.insert_after(soup.new_tag('br'))
 
     # Remove linebreaks inside text nodes (as browser does)
-    for node in soup.find_all(string=lambda string: '\n' in string):
+    for node in soup(string=lambda string: '\n' in string):
         node.string.replace_with(node.string.replace('\n', ' '))
 
     # Swap html linebreaks to normal ones
-    for node in soup.find_all('br'):
+    for node in soup('br'):
         node.replace_with('\n')
 
     # Cleanup final text
-    text = soup.getText().strip()
-    text = str(text)
+    text = soup.getText()
+    text = str(text).strip()
     text = re.sub(' {2,}', ' ', text)
     text = text.replace(' \n', '\n').replace('\n ', '\n')
     text = re.sub('\n{3,}', '\n\n', text)
 
     soup.decompose()
+    etree.clear_error_log()
     del soup
-
-    gc.collect()
 
     return text
 
