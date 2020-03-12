@@ -2,6 +2,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import gc
 import re
 from bs4 import BeautifulSoup, Comment
 from html import unescape
@@ -95,9 +96,15 @@ def fragment_to_text(html):
 
     # Cleanup final text
     text = soup.getText().strip()
+    text = str(text)
     text = re.sub(' {2,}', ' ', text)
     text = text.replace(' \n', '\n').replace('\n ', '\n')
     text = re.sub('\n{3,}', '\n\n', text)
+
+    soup.decompose()
+    del soup
+
+    gc.collect()
 
     return text
 
