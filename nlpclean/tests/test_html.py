@@ -3,6 +3,7 @@ from __future__ import division
 from __future__ import print_function
 
 import os
+import resource
 import unittest
 from ..html import html_to_article, fragment_to_text
 
@@ -74,6 +75,19 @@ class TestFragmentToText(unittest.TestCase):
             ground = f.read()
 
         self.assertEqual(ground, source)
+
+    def test_memory(self):
+        with open(os.path.join(os.path.dirname(__file__), 'fragment_to_text', 'article1_space.html'), 'rt') as f:
+            source = f.read()
+
+        result = fragment_to_text(source)
+        memory_start = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+        for _ in range(100):
+            result = fragment_to_text(source)
+        memory_end = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+
+        self.assertGreater(len(result), 0)
+        self.assertGreater(memory_start * 1.01, memory_end)
 
 
 class TestHtmlToText(unittest.TestCase):
