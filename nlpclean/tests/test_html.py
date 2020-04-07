@@ -1,7 +1,3 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import gc
 import os
 import resource
@@ -98,7 +94,6 @@ class TestFragmentToText(unittest.TestCase):
             ground = f.read()
 
         self.assertEqual(ground, source)
-
 
     def test_memory(self):
         with open(os.path.join(os.path.dirname(__file__), 'fragment_to_text', 'article1_space.html'), 'rt') as f:

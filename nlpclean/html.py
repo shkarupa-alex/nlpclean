@@ -1,7 +1,3 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import re
 from bs4 import BeautifulSoup, Comment
 from html import unescape
@@ -11,13 +7,13 @@ from newspaper.configuration import Configuration as NewspaperConfig
 from newspaper.extractors import ContentExtractor as NewspaperExtractor
 from newspaper.outputformatters import OutputFormatter as NewspaperFormatter
 
-MEANINGLESS_TAGS = [
+_MEANINGLESS_TAGS = [
     'applet', 'audio', 'blockquote', 'canvas', 'code', 'comment', 'datalist', 'embed', 'figure', 'form', 'frame',
     'frameset', 'iframe', 'img', 'kbd', 'map', 'menu', 'noembed', 'noframes', 'noscript', 'object', 'output',
     'plaintext', 'pre', 'ruby', 'samp', 'script', 'style', 'svg', 'title', 'var', 'video', 'xmp'
 ]
 
-BLOCKLEVEL_TAGS = [
+_BLOCKLEVEL_TAGS = [
     'address', 'article', 'aside', 'blockquote', 'center', 'dd', 'details', 'dialog', 'dir', 'div', 'dl', 'dt',
     'fieldset', 'figcaption', 'figure', 'footer', 'form', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'header', 'hgroup', 'hr',
     'isindex', 'li', 'main', 'menu', 'nav', 'noframes', 'noscript', 'ol', 'p', 'pre', 'section', 'table', 'td', 'th',
@@ -32,15 +28,15 @@ def html_to_article(content, language):
     doc = config.get_parser().fromstring(content.strip())
 
     # Split block-level elements with newlines
-    for tag in BLOCKLEVEL_TAGS:
-        if tag in MEANINGLESS_TAGS:
+    for tag in _BLOCKLEVEL_TAGS:
+        if tag in _MEANINGLESS_TAGS:
             continue
         for node in doc.xpath('//{}'.format(tag)):
             node.append(etree.Element('br'))
             node.append(etree.Element('br'))
 
     # Initial cleanup
-    cleaner = NewspaperCleaner(config)
+    cleaner = _NewspaperCleaner(config)
     doc = cleaner.clean(doc)
 
     # Best node estimation
@@ -79,15 +75,15 @@ def fragment_to_text(html):
     soup = BeautifulSoup(html, 'lxml')
 
     # Drop comments
-    for comment in soup(text=lambda text: isinstance(text, Comment)):
+    for comment in soup(text=lambda txt: isinstance(txt, Comment)):
         comment.extract()
 
     # Drop non-meaning tags
-    for node in soup(MEANINGLESS_TAGS):
+    for node in soup(_MEANINGLESS_TAGS):
         node.replace_with(soup.new_tag('br'))
 
     # Insert linebreaks around block-level tags
-    for node in soup(BLOCKLEVEL_TAGS):
+    for node in soup(_BLOCKLEVEL_TAGS):
         node.insert_before(soup.new_tag('br'))
         node.insert_before(soup.new_tag('br'))
         node.insert_after(soup.new_tag('br'))
@@ -115,9 +111,9 @@ def fragment_to_text(html):
     return text
 
 
-class NewspaperCleaner(BaseNewspaperCleaner):
+class _NewspaperCleaner(BaseNewspaperCleaner):
     def clean(self, doc_to_clean):
-        doc_to_clean = super(NewspaperCleaner, self).clean(doc_to_clean)
+        doc_to_clean = super(_NewspaperCleaner, self).clean(doc_to_clean)
 
         doc_to_clean = self.div_to_para(doc_to_clean, 'article')
 
