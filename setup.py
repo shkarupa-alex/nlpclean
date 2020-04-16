@@ -9,7 +9,7 @@ with open('README.md', 'r') as fh:
 
 setup(
     name='nlpclean',
-    version='1.0.2',
+    version='1.0.3',
     description='Utilities for cleaning up text corpus',
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -21,6 +21,10 @@ setup(
     install_requires=[
         'newspaper3k>=0.2.8',
         'beautifulsoup4>=4.8.2',
+        'langid>=1.1.6',
+        'pycld2>=0.41',
+        'pyfasttext>=0.4.6',
+        'tqdm>=4.45.0'
     ],
     python_requires='>=3.6.0',
     test_suite='nose.collector',

@@ -1,7 +1,3 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import gc
 import os
 import resource
@@ -36,6 +32,15 @@ class TestHtmlToArticle(unittest.TestCase):
 
 
 class TestFragmentToText(unittest.TestCase):
+    def test_break(self):
+        with open(os.path.join(os.path.dirname(__file__), 'fragment_to_text', 'break_source.html'), 'rt') as f:
+            without_space = fragment_to_text(f.read())
+        with open(os.path.join(os.path.dirname(__file__), 'fragment_to_text', 'break_ground.txt'), 'rt') as f:
+            comment_ground = f.read()
+
+        print(without_space)
+        self.assertEqual(without_space, comment_ground)
+
     def test_comment(self):
         with open(os.path.join(os.path.dirname(__file__), 'fragment_to_text', 'comment_no_space.html'), 'rt') as f:
             without_space = fragment_to_text(f.read())
@@ -89,7 +94,6 @@ class TestFragmentToText(unittest.TestCase):
             ground = f.read()
 
         self.assertEqual(ground, source)
-
 
     def test_memory(self):
         with open(os.path.join(os.path.dirname(__file__), 'fragment_to_text', 'article1_space.html'), 'rt') as f:
