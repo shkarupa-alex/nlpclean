@@ -22,10 +22,16 @@ _BLOCKLEVEL_TAGS = [
 
 
 def html_to_article(content, language):
+    content = content.strip()
+    if not len(content):
+        return ''
+
     config = NewspaperConfig()
     config.language = language
 
     doc = config.get_parser().fromstring(content.strip())
+    if doc is None:
+        return ''
 
     # Split block-level elements with newlines
     for tag in _BLOCKLEVEL_TAGS:
