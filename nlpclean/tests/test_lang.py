@@ -9,14 +9,14 @@ class TestDetectMainLang(unittest.TestCase):
 
         self.assertEqual(lang, 'en')
         self.assertEqual(reliable, False)
-        self.assertEqual(score, 0.056487168652884445)
+        self.assertEqual(score, 0.0933036017249746)
 
     def test_short(self):
         lang, reliable, score = detect_main_lang('Привет')
 
         self.assertEqual(lang, 'ru')
         self.assertEqual(reliable, False)
-        self.assertEqual(score, 0.5050400509335103)
+        self.assertEqual(score, 0.5044815076555188)
 
     def test_english(self):
         with open(os.path.join(os.path.dirname(__file__), 'detect_main_lang', 'english.txt'), 'rt') as f:
@@ -24,7 +24,7 @@ class TestDetectMainLang(unittest.TestCase):
 
         self.assertEqual(lang, 'en')
         self.assertEqual(reliable, True)
-        self.assertEqual(score, 0.9934190876399208)
+        self.assertEqual(score, 0.9900130995114645)
 
     def test_russian(self):
         with open(os.path.join(os.path.dirname(__file__), 'detect_main_lang', 'russian.txt'), 'rt') as f:
@@ -32,7 +32,7 @@ class TestDetectMainLang(unittest.TestCase):
 
         self.assertEqual(lang, 'ru')
         self.assertEqual(reliable, True)
-        self.assertEqual(score, 0.8567562182014123)
+        self.assertEqual(score, 0.858525361220042)
 
     def test_bulgarian(self):
         with open(os.path.join(os.path.dirname(__file__), 'detect_main_lang', 'bulgarian.txt'), 'rt') as f:
@@ -40,7 +40,7 @@ class TestDetectMainLang(unittest.TestCase):
 
         self.assertEqual(lang, 'bg')
         self.assertEqual(reliable, True)
-        self.assertEqual(score, 0.9149695330361064)
+        self.assertEqual(score, 0.9250262475013734)
 
     def test_ukrain(self):
         with open(os.path.join(os.path.dirname(__file__), 'detect_main_lang', 'ukrain.txt'), 'rt') as f:
@@ -48,7 +48,7 @@ class TestDetectMainLang(unittest.TestCase):
 
         self.assertEqual(lang, 'uk')
         self.assertEqual(reliable, True)
-        self.assertEqual(score, 0.9726822916420593)
+        self.assertEqual(score, 0.9731481417020161)
 
     def test_combined(self):
         with open(os.path.join(os.path.dirname(__file__), 'detect_main_lang', 'combined.txt'), 'rt') as f:
@@ -56,4 +56,4 @@ class TestDetectMainLang(unittest.TestCase):
 
         self.assertEqual(lang, 'be')
         self.assertEqual(reliable, False)
-        self.assertEqual(score, 0.3933333333333333)
+        self.assertEqual(score, 0.44914431631565094)

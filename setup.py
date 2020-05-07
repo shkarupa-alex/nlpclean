@@ -23,12 +23,13 @@ setup(
         'beautifulsoup4>=4.8.2',
         'langid>=1.1.6',
         'pycld2>=0.41',
-        'pyfasttext>=0.4.6',
-        'tqdm>=4.45.0'
+        'fasttext>=0.9.2',
+        'tqdm>=4.45.0',
+        'pybloom-mirror>=2.0.0',
     ],
     python_requires='>=3.6.0',
-    test_suite='nose.collector',
-    tests_require=['nose'],
+    setup_requires=['pytest-runner'],
+    tests_require=['pytest'],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',

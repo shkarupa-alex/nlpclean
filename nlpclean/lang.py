@@ -1,3 +1,4 @@
+import fasttext
 import operator
 import os
 import requests
@@ -5,7 +6,6 @@ import threading
 import tqdm
 from langid.langid import LanguageIdentifier, model as langid_model
 from pycld2 import detect as cld_detect
-from pyfasttext import FastText
 
 _langid_model = None
 _fasttext_model = None
@@ -50,7 +50,7 @@ def detect_main_lang(text):
     global _fasttext_model
     with _init_lock:
         if _fasttext_model is None:
-            _fasttext_model = FastText(_download_fasttext())
+            _fasttext_model = fasttext.load_model(_download_fasttext())
 
     langs = {}
     down = 0.
@@ -75,8 +75,9 @@ def detect_main_lang(text):
         down += 0.5
 
     try:
-        scores = _fasttext_model.predict_proba([text], 3)[0]
-        for lang, score in scores:
+        scores = _fasttext_model.predict(text.replace('\n', ' '), 3)
+        for lang, score in zip(*scores):
+            lang = lang.replace('__label__', '')
             if lang not in langs:
                 langs[lang] = 0.
             langs[lang] += score
