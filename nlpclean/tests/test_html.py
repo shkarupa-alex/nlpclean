@@ -38,7 +38,6 @@ class TestFragmentToText(unittest.TestCase):
         with open(os.path.join(os.path.dirname(__file__), 'fragment_to_text', 'break_ground.txt'), 'rt') as f:
             comment_ground = f.read()
 
-        print(without_space)
         self.assertEqual(without_space, comment_ground)
 
     def test_comment(self):

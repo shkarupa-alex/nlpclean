@@ -5,6 +5,7 @@ import requests
 import threading
 import tqdm
 from langid.langid import LanguageIdentifier, model as langid_model
+from langdetect import detect_langs as lang_detect
 from pycld2 import detect as cld_detect
 
 _langid_model = None
@@ -85,8 +86,18 @@ def detect_main_lang(text):
         print(e)
         down += 0.5
 
+    try:
+        scores = lang_detect(text)
+        for res in scores:
+            if res.lang not in langs:
+                langs[res.lang] = 0.
+            langs[res.lang] += res.prob
+    except Exception as e:
+        print(e)
+        down += 0.5
+
     lang = max(langs.items(), key=operator.itemgetter(1))[0]
     reliable = langs[lang] >= 1.99 - down
-    score = langs[lang] / 3.
+    score = langs[lang] / 4.
 
     return lang, reliable, score

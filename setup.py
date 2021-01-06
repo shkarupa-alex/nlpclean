@@ -20,12 +20,19 @@ setup(
     packages=find_packages(),
     install_requires=[
         'newspaper3k>=0.2.8',
+        'Pillow>=7.0.0',
         'beautifulsoup4>=4.8.2',
         'langid>=1.1.6',
         'pycld2>=0.41',
+        'langdetect>=1.0.8',
         'fasttext>=0.9.2',
         'tqdm>=4.45.0',
         'pybloom-mirror>=2.0.0',
+        'ftfy>=5.8'
+    ],
+    dependency_links=[
+        # TODO: remove when newspaper3k dependency will be updated
+        'https://github.com/fxsjy/jieba/tarball/jieba3k#egg=jieba3k-0.35.1'
     ],
     python_requires='>=3.6.0',
     setup_requires=['pytest-runner'],

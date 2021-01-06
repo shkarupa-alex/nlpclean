@@ -79,6 +79,8 @@ def fragment_to_text(html):
         return ''
 
     soup = BeautifulSoup(html, 'lxml')
+    if soup is None:
+        raise ValueError('Can\'t build DOM tree with LXML')
 
     # Drop comments
     for comment in soup(text=lambda txt: isinstance(txt, Comment)):
