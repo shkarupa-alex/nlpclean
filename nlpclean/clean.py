@@ -1,4 +1,11 @@
 
+
+def remove_html_tags(text):
+    pass
+
+def remove_trash_words(text):
+    pass
+
 # https://github.com/google-research/electra/blob/master/model/tokenization.py
 # def _run_strip_accents(self, text):
 #     """Strips accents from a piece of text."""
@@ -34,3 +41,5 @@
 #   if cat.startswith("C"):
 #     return True
 #   return False
+
+# TODO https://github.com/NeelShah18/emot/blob/master/emot/emo_unicode.py
