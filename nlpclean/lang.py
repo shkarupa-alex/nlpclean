@@ -1,11 +1,11 @@
 import fasttext
+import logging
 import operator
 import os
 import requests
 import threading
 import tqdm
 from langid.langid import LanguageIdentifier, model as langid_model
-from langdetect import detect_langs as lang_detect
 from pycld2 import detect as cld_detect
 
 _langid_model = None
@@ -42,7 +42,7 @@ def _download_fasttext():
     return model_path
 
 
-def detect_main_lang(text):
+def detect_main_lang(text, warnings=True):
     global _langid_model
     with _init_lock:
         if _langid_model is None:
@@ -54,50 +54,56 @@ def detect_main_lang(text):
             _fasttext_model = fasttext.load_model(_download_fasttext())
 
     langs = {}
-    down = 0.
+
+    cld_best_lang, cld_best_score = False, None
+    try:
+        _, _, scores = cld_detect(text)
+        if len(scores):
+            cld_best_lang = scores[0][1]
+            cld_best_score = scores[0][2] / 100.
+        for _, lang, score, _ in scores:
+            if lang not in langs:
+                langs[lang] = []
+            langs[lang].append(score / 100.)
+    except Exception as e:
+        if warnings:
+            logging.warning(e)
+
+    fst_best_lang, fst_best_score = False, None
+    try:
+        scores = _fasttext_model.predict(text.replace('\n', ' '), 3)
+        if len(scores):
+            fst_best_lang = scores[0][0].replace('__label__', '')
+            fst_best_score = scores[1][0]
+        for lang, score in zip(*scores):
+            lang = lang.replace('__label__', '')
+            if lang not in langs:
+                langs[lang] = []
+            langs[lang].append(score)
+    except Exception as e:
+        if warnings:
+            logging.warning(e)
+
+    # Fast path
+    if cld_best_lang == fst_best_lang and cld_best_lang and 'un' != cld_best_lang:
+        score = (cld_best_score + fst_best_score) / 2.
+        sure = score > 0.75
+        return cld_best_lang, sure, score
 
     try:
         lang, score = _langid_model.classify(text)
         if lang not in langs:
-            langs[lang] = 0.
-        langs[lang] += score
+            langs[lang] = []
+        langs[lang].append(score)
     except Exception as e:
-        print(e)
-        down += 0.5
+        if warnings:
+            logging.warning(e)
 
-    try:
-        _, _, scores = cld_detect(text)
-        for _, lang, score, _ in scores:
-            if lang not in langs:
-                langs[lang] = 0.
-            langs[lang] += score / 100
-    except Exception as e:
-        print(e)
-        down += 0.5
+    if not langs:
+        return 'un', False, 0.0
 
-    try:
-        scores = _fasttext_model.predict(text.replace('\n', ' '), 3)
-        for lang, score in zip(*scores):
-            lang = lang.replace('__label__', '')
-            if lang not in langs:
-                langs[lang] = 0.
-            langs[lang] += score
-    except Exception as e:
-        print(e)
-        down += 0.5
+    scored = map(lambda x: (x[0], sum(x[1]) / len(x[1])), langs.items())
+    lang, score = max(scored, key=operator.itemgetter(1))
+    sure = len(langs[lang]) > 1 and score >= 0.75
 
-    try:
-        scores = lang_detect(text)
-        for res in scores:
-            if res.lang not in langs:
-                langs[res.lang] = 0.
-            langs[res.lang] += res.prob
-    except Exception as e:
-        print(e)
-        down += 0.5
-
-    lang = max(langs.items(), key=operator.itemgetter(1))[0]
-    reliable = langs[lang] >= 1.99 - down
-    score = langs[lang] / 4.
-
-    return lang, reliable, score
+    return lang, sure, score
