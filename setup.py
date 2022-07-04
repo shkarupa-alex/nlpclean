@@ -9,7 +9,7 @@ with open('README.md', 'r') as fh:
 
 setup(
     name='nlpclean',
-    version='1.0.5',
+    version='1.0.6',
     description='Utilities for cleaning up text corpus',
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -22,15 +22,15 @@ setup(
         'cPython>=0.0.6',  # required by fasttext but missed
         'bitarray==1.4.2',  # required by pybloom-mirror, until https://foss.heptapod.net/pypy/pypy/-/issues/3281
         'newspaper3k>=0.2.8',
-        'Pillow>=7.0.0',
-        'beautifulsoup4>=4.8.2',
+        'Pillow>=9.1.1',
+        'beautifulsoup4>=4.11.1',
         'langid>=1.1.6',
         'pycld2>=0.41',
         'fasttext>=0.9.2',
-        'tqdm>=4.45.0',
+        'tqdm>=4.64.0',
         'pybloom-mirror>=2.0.0',
-        'ftfy>=5.8',
-        'requests>=2.25.1'
+        'ftfy>=6.1.1',
+        'requests>=2.28.1'
     ],
     dependency_links=[
         # TODO: remove when newspaper3k dependency will be updated
