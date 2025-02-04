@@ -8,7 +8,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name='nlpclean',
-    version='1.1.1',
+    version='1.1.2',
     description='Utilities for cleaning up text corpus',
     long_description=long_description,
     long_description_content_type="text/markdown",
