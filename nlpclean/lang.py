@@ -101,10 +101,10 @@ def detect_main_lang(text, warnings=True):
             logging.warning(e)
 
     if not langs:
-        return 'un', False, 0.0
+        return '', False, 0.0
 
     scored = map(lambda x: (x[0], sum(x[1]) / len(x[1])), langs.items())
     lang, score = max(scored, key=operator.itemgetter(1))
-    sure = len(langs[lang]) > 1 and score >= 0.75
+    sure = len(langs[lang]) == 1 or len(langs[lang]) > 1 and score >= 0.75
 
     return lang, sure, score
