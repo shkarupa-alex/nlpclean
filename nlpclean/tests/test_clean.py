@@ -1,6 +1,5 @@
-import os
 import unittest
-from ..clean import remove_accent_glyphs
+from nlpclean.clean import remove_accent_glyphs
 
 
 class TestRemoveAccentGlyphs(unittest.TestCase):

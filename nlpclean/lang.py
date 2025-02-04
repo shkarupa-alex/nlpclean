@@ -18,6 +18,7 @@ def _download_fasttext():
     expected_size = 131266198
 
     model_dir = os.path.expanduser(os.path.join('~', '.nlpclean'))
+    model_dir = os.getenv("DATA_DIR") or model_dir
     os.makedirs(model_dir, exist_ok=True)
 
     model_name = 'lid.176.bin'

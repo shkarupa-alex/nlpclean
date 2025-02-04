@@ -1,13 +1,12 @@
 import re
-from pybloom import ScalableBloomFilter
+from fastbloom_rs import BloomFilter
 from unicodedata import normalize
 
 
-def dedup_lines_bloom(text, just_words=True, zero_digits=True, capacity=100000, error=0.00001):
-    sbf = ScalableBloomFilter(
-        initial_capacity=capacity,
-        error_rate=error,
-        mode=ScalableBloomFilter.LARGE_SET_GROWTH
+def dedup_lines_bloom(text, just_words=True, zero_digits=True, capacity=100000000, error=0.00001):
+    sbf = BloomFilter(
+        expected_elements=capacity,
+        false_positive_probability=error
     )
 
     for line in text:

@@ -1,6 +1,5 @@
-import os
 import unittest
-from ..repair import repair_html_entities, repair_broken_unicode
+from nlpclean.repair import repair_html_entities, repair_broken_unicode
 
 
 class TestRepairHtmlEntities(unittest.TestCase):

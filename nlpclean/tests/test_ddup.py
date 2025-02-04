@@ -1,6 +1,6 @@
 import os
 import unittest
-from ..ddup import dedup_lines_bloom
+from nlpclean.ddup import dedup_lines_bloom
 
 
 class TestDedupLinesBloom(unittest.TestCase):
@@ -31,6 +31,5 @@ class TestDedupLinesBloom(unittest.TestCase):
             result = list(result)
         with open(os.path.join(os.path.dirname(__file__), 'dedup_lines_bloom', 'some_dup_ground.txt'), 'rt') as f:
             expected = f.read().split('\n')
-        print('\n'.join(result))
 
         self.assertListEqual(expected, result)
