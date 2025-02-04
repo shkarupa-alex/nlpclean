@@ -1,6 +1,6 @@
 import os
 import unittest
-from ..lang import detect_main_lang
+from nlpclean.lang import detect_main_lang
 
 
 class TestDetectMainLang(unittest.TestCase):

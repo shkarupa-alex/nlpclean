@@ -83,7 +83,7 @@ def fragment_to_text(html):
         raise ValueError('Can\'t build DOM tree with LXML')
 
     # Drop comments
-    for comment in soup(text=lambda txt: isinstance(txt, Comment)):
+    for comment in soup(string=lambda txt: isinstance(txt, Comment)):
         comment.extract()
 
     # Drop non-meaning tags

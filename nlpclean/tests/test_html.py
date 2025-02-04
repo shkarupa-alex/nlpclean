@@ -2,7 +2,7 @@ import gc
 import os
 import resource
 import unittest
-from ..html import html_to_article, fragment_to_text
+from nlpclean.html import html_to_article, fragment_to_text
 
 
 class TestHtmlToArticle(unittest.TestCase):
