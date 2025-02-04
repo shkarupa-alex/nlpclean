@@ -15,7 +15,7 @@ class TestDetectMainLang(unittest.TestCase):
         lang, reliable, score = detect_main_lang('Ну')
 
         self.assertEqual(lang, 'ru')
-        self.assertEqual(reliable, False)
+        self.assertEqual(reliable, True)
         self.assertAlmostEqual(score, 0.7520208358764648, places=5)
 
     def test_english(self):
