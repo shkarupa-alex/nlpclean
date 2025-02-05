@@ -8,7 +8,7 @@ from newspaper.extractors import ContentExtractor as NewspaperExtractor
 from newspaper.outputformatters import OutputFormatter as NewspaperFormatter
 
 _MEANINGLESS_TAGS = [
-    'applet', 'audio', 'blockquote', 'canvas', 'code', 'comment', 'datalist', 'embed', 'figure', 'form', 'frame',
+    'applet', 'audio', 'canvas', 'code', 'comment', 'datalist', 'embed', 'figure', 'form', 'frame',
     'frameset', 'iframe', 'img', 'kbd', 'map', 'menu', 'noembed', 'noframes', 'noscript', 'object', 'output',
     'plaintext', 'pre', 'ruby', 'samp', 'script', 'style', 'svg', 'title', 'var', 'video', 'xmp'
 ]
