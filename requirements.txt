@@ -4,6 +4,6 @@ langid>=1.1.6
 pycld2>=0.41
 fasttext>=0.9.3
 tqdm>=4.67.1
-fastbloom-rs
+rbloom>=1.5.2
 ftfy>=6.1.1
 lxml_html_clean>=0.4.1
