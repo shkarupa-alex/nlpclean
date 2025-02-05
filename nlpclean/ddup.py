@@ -1,32 +1,39 @@
 import re
-from fastbloom_rs import BloomFilter
+from rbloom import Bloom
 from unicodedata import normalize
 
+def make_dedup_bloom(separator='\n', just_words=True, zero_digits=True, capacity=100000000, error=0.00001, hash=None):
+    if hash is None:
+        bf = Bloom(capacity, error)
+    else:
+        bf = Bloom(capacity, error, hash)
 
-def dedup_lines_bloom(text, just_words=True, zero_digits=True, capacity=100000000, error=0.00001):
-    sbf = BloomFilter(
-        expected_elements=capacity,
-        false_positive_probability=error
-    )
+    def _dedup_fn(text):
+        if not isinstance(text, str):
+            raise TypeError(f'Expected "text" to be a sting, found: {type(text)}')
 
-    for line in text:
-        if not isinstance(line, str):
-            raise TypeError('Expected "text" to contain stings, found: {}'.format(type(line)))
+        text = normalize('NFKD', text)
 
-        key = line.strip()
-        if not key:
-            yield line
+        lines = []
+        for line in text.split(separator):
+            line = line.strip()
 
-        key = normalize('NFKD', key)
+            if not line:
+                lines.append(line)
+                continue
 
-        if just_words:
-            key = ' '.join(re.findall(r'\w+', key))
-        if zero_digits:
-            key = re.sub(r'\d', '0', key)
+            if just_words:
+                line = ' '.join(re.findall(r'\w+', line))
+            if zero_digits:
+                line = re.sub(r'\d', '0', line)
 
-        if key in sbf:
-            line = ''
-        else:
-            sbf.add(key)
+            if line in bf:
+                line = ''
+            else:
+                bf.add(line)
 
-        yield line
+            lines.append(line)
+
+        return separator.join(lines)
+
+    return _dedup_fn
