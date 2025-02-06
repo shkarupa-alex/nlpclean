@@ -1,9 +1,8 @@
 newspaper3k>=0.2.8
 beautifulsoup4>=4.13.1
-langid>=1.1.6
-pycld2>=0.41
 fasttext>=0.9.3
 tqdm>=4.67.1
 rbloom>=1.5.2
 ftfy>=6.1.1
 lxml_html_clean>=0.4.1
+iso639-lang>=2.5.1

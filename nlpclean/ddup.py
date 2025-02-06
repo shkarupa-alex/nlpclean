@@ -2,11 +2,8 @@ import re
 from rbloom import Bloom
 from unicodedata import normalize
 
-def make_dedup_bloom(separator='\n', just_words=True, zero_digits=True, capacity=100000000, error=0.00001, hash=None):
-    if hash is None:
-        bf = Bloom(capacity, error)
-    else:
-        bf = Bloom(capacity, error, hash)
+def make_dedup_bloom(separator='\n', just_words=True, zero_digits=True, capacity=100000000, error=0.00001):
+    bf = Bloom(capacity, error)
 
     def _dedup_fn(text):
         if not isinstance(text, str):
