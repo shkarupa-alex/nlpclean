@@ -1,14 +1,10 @@
 import fasttext
+import iso639
 import logging
-import operator
 import os
 import requests
-import threading
-import iso639
+import tempfile
 import tqdm
-
-_fasttext_model = None
-_init_lock = threading.Lock()
 
 
 def _download_fasttext():
@@ -25,43 +21,47 @@ def _download_fasttext():
     if os.path.exists(model_path) and os.path.getsize(model_path) == expected_size:
         return model_path
 
-    remote_size = int(requests.head(remote_url, allow_redirects=True).headers['Content-Length'])
+    remote_size = int(
+        requests.head(remote_url, allow_redirects=True).headers['Content-Length'])
     if expected_size != remote_size:
         raise AssertionError('Unexpected remote model size')
 
-    bar = tqdm.tqdm(initial=0, total=remote_size, unit='B', unit_scale=True, desc=model_name)
-    req = requests.get(remote_url, allow_redirects=True, stream=True)
-    with open(model_path, 'wb') as f:
-        for chunk in req.iter_content(chunk_size=1024):
-            if chunk:
-                f.write(chunk)
-                bar.update(1024)
-    bar.close()
+    with tqdm.tqdm(initial=0, total=remote_size, unit='B', unit_scale=True, desc=model_name) as bar:
+        with tempfile.NamedTemporaryFile(delete=False) as f:
+            temp_name = f.name
+
+            request = requests.get(remote_url, allow_redirects=True, stream=True)
+            for chunk in request.iter_content(chunk_size=1024):
+                if chunk:
+                    f.write(chunk)
+                    bar.update(1024)
+
+    os.rename(temp_name, model_path)
 
     return model_path
 
 
-def detect_main_lang(text):
-    if not text.strip():
-        return '??', 1.0
+def detect_main_lang():
+    _fasttext_model = fasttext.load_model(_download_fasttext())
 
-    global _fasttext_model
-    with _init_lock:
-        if _fasttext_model is None:
-            _fasttext_model = fasttext.load_model(_download_fasttext())
+    def _detect_fn(text):
+        if not text.strip():
+            return '??', 1.0
 
-    try:
-        scores = _fasttext_model.predict(text.replace('\n', ' '))
-    except Exception as e:
-        logging.warning(e)
-        return '??', 0.0
+        try:
+            scores = _fasttext_model.predict(text.replace('\n', ' '))
+        except Exception as e:
+            logging.warning(e)
+            return '??', 0.0
 
-    if not scores or not scores[0]:
-        return '??', 0.0
+        if not scores or not scores[0]:
+            return '??', 0.0
 
-    lang = scores[0][0].replace('__label__', '').split('_')[0]
-    lang = iso639.Lang(lang).pt1
-    if not lang:
-        return '??', scores[1][0]
+        lang = scores[0][0].replace('__label__', '').split('_')[0]
+        lang = iso639.Lang(lang).pt1
+        if not lang:
+            return '??', scores[1][0]
 
-    return lang, scores[1][0]
+        return lang, scores[1][0]
+
+    return _detect_fn
