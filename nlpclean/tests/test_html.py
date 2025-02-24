@@ -3,12 +3,12 @@ import os
 import resource
 import unittest
 from absl.testing import parameterized
-from nlpclean.html import html_to_article, fragment_to_text
+from nlpclean.html import html_to_article, fragment_to_markdown, fragment_to_text
 
 
 class TestHtmlToArticle(parameterized.TestCase):
     def _get_case(self, name):
-        inputs_path = os.path.join(os.path.dirname(__file__), 'html_to_article', f'{name}.html')
+        inputs_path = os.path.join(os.path.dirname(__file__), 'html_to_markdown', f'{name}.html')
         with open(inputs_path, 'rt') as f:
             inputs = f.read()
 
@@ -20,10 +20,11 @@ class TestHtmlToArticle(parameterized.TestCase):
 
         return inputs, expected
 
-    @parameterized.parameters(['citilink', 'dns', 'drive2', 'gazeta', 'habr', 'iv1', 'iv2', 'kinopoisk', 'kommersant', 'kp', 'lenta', 'livejournal1', 'livejournal2', 'livejournal3', 'mk', 'ozon', 'rbc', 'ria', 'sport', 'vc', 'wb', 'woman', 'zen'])
+    @parameterized.parameters(['citilink', 'dns', 'drive2', 'gazeta', 'habr', 'iv1', 'iv2', 'iv3', 'iv4', 'iv5', 'kinopoisk', 'kommersant', 'kp', 'lenta', 'livejournal1', 'livejournal2', 'livejournal3', 'mk', 'ozon', 'rbc', 'ria', 'sport', 'vc', 'wb', 'woman', 'zen'])
     def test_makrdown(self, name):
         inputs, expected = self._get_case(name)
-        result = html_to_article(inputs, format='markdown')
+        result = html_to_article(inputs)
+        result = fragment_to_markdown(result)
 
         self.assertEqual(expected, result)
 
@@ -45,9 +46,5 @@ class TestFragmentToText(parameterized.TestCase):
     def test_text(self, name):
         inputs, expected = self._get_case(name)
         result = fragment_to_text(inputs)
-
-        if result != expected:
-            with open(os.path.join(os.path.dirname(__file__), 'fragment_to_text', f'{name}_.txt'), 'wt') as f:
-                f.write(result)
 
         self.assertEqual(expected, result)
