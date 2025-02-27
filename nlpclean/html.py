@@ -1,4 +1,3 @@
-import markitdown
 import re
 import tempfile
 import trafilatura
