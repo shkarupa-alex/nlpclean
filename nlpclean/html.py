@@ -45,6 +45,10 @@ def html_to_article(html, parser='lxml'):
     # Normalize tables
     soup = table_span_normalize(soup)
 
+    # Remember h1
+    h1 = soup.find('h1')
+    h1 = h1.text.strip() if h1 else h1
+
     html = str(soup)
 
     extract_kwargs = {
@@ -63,6 +67,15 @@ def html_to_article(html, parser='lxml'):
         node.name = 'tr'
     for node in soup('cell'):
         node.name = 'td'
+
+    if h1 and not soup.find('h1'):
+        p1 = soup.find('p', string=h1)
+        if p1:
+            p1.tag = 'h1'
+        else:
+            tag = soup.new_tag('h1')
+            tag.string = h1
+            soup.find('body').insert(0, tag)
 
     html = str(soup)
 
@@ -88,15 +101,27 @@ def fragment_to_markdown(html, parser='lxml'):
     converter = MarkdownConverter(strip=['a', 'img'], heading_style='atx')
     md = converter.convert_soup(soup).strip()
 
+    # Replace newlines inside code blocks before "space cleaning"
     md = re.sub(
         '```.+?```',
         lambda m: m.group(0).strip().replace('\n', '___NEWLINE_HACK___'),
         md, flags=re.S)
+    # Cleanup spaces around newlines
     md = re.sub(r'[^\S\n]*\n[^\S\n]*', '\n', md)
-    md = re.sub(r'\n{3,}', '\n\n', md)
+    # Revert newlines after code blocks before "space cleaning"
     md = md.replace('___NEWLINE_HACK___', '\n')
+
+    # Remove extra newlines inside code blocks
     md = re.sub(r'\n```\n*(.+?)\n*```\n', r'\n```\n\1\n```\n', md, flags=re.S)
 
+    # Remove extra newlines between blocks
+    md = re.sub(r'\n{3,}', '\n\n', md)
+
+    # Fix sticked headers
+    md = re.sub(r'([^\n])\n#', r'\1\n\n#', md)
+    md = re.sub(r'\n(#.+)\n+', r'\n\1\n\n', md)
+
+    # Convert lines that looks like lists to lists
     md = md.replace('\n\n— ', '\n* ')
     md = md.replace('\n— ', '\n* ')
 
